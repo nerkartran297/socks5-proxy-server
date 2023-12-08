@@ -1,0 +1,31 @@
+{
+  "name": "socks-proxy-server",
+  "version": "1.0.0",
+  "description": "A SOCKS Proxy Server implemented in Node.js",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "ftp": "^0.3.10",
+    "http": "^0.0.1-security",
+    "https": "^1.0.0",
+    "socks5": "^1.0.1"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "socks",
+    "proxy",
+    "nodejs"
+  ],
+  "author": "nerkar",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/socks-proxy-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/socks-proxy-server/issues"
+  },
+  "homepage": "https://github.com/yourusername/socks-proxy-server"
+}
