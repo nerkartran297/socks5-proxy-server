@@ -3,10 +3,10 @@
 var net = require('net'),
     util = require('util'),
     DNS = require('dns'),
-    log = function(){},///console.log,
+    log = function() {},///console.log,
     //log = console.log.bind(console),
     //info = console.info.bind(console),
-    info = function(){},///console.log,
+    info = function() {},///console.log,
     errorLog = console.error.bind(console),
     ///clients = [],
     SOCKS_VERSION5 = 5,
@@ -85,7 +85,7 @@ var net = require('net'),
 function createSocksServer(cb, userpass) {
     // record userpass 
     USERPASS = userpass;
-    console.log('userpass:'+JSON.stringify(userpass));
+    console.log('userpass:' + JSON.stringify(userpass));
 
     var socksServer = net.createServer();
     socksServer.on('listening', function() {

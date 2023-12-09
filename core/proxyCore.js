@@ -1,5 +1,5 @@
 const net = require('net');
-const { handleAuthentication } = require('../auth/authenticator');
+const { authenticate } = require('../auth/authService');
 
 class ProxyCore {
   constructor() {
@@ -9,7 +9,7 @@ class ProxyCore {
   handleConnection(clientSocket) {
     clientSocket.once('data', (data) => {
       // Perform authentication on the initial data received
-      if (handleAuthentication(clientSocket, data)) {
+      if (authenticate(clientSocket, data)) {
         // If authenticated, proceed with connection
         this.setUpProxy(clientSocket, data);
       }
