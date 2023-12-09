@@ -1,7 +1,5 @@
-// src/utils/logger.js
-class Logger {
-    // Implement your logger logic here
-  }
-  
-  module.exports = Logger;
-  
+function log(message) {
+  console.log(`${new Date().toISOString()} - ${message}`);
+}
+
+module.exports = { log };

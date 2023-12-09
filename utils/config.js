@@ -1,7 +1,6 @@
-// src/utils/config.js
-class Config {
-    // Implement your configuration logic here
-  }
-  
-  module.exports = Config;
-  
+const config = {
+  port: 1080,
+  // Add other configuration settings as needed
+};
+
+module.exports = config;
