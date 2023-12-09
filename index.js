@@ -1,11 +1,16 @@
 const net = require('net');
-const { handleSocksConnection } = require('./src/proxy/server');
+const ProxyCore = require('./core/proxyCore');
 
-const PORT = 1080; // Default SOCKS proxy port
-
+const proxy = new ProxyCore();
 const server = net.createServer();
-server.on('connection', handleSocksConnection);
 
-server.listen(PORT, () => {
-  console.log(`SOCKS proxy server started on port ${PORT}`);
+server.on('connection', (socket) => {
+  console.log('Client connected');
+  proxy.handleConnection(socket);
+});
+
+const PORT = 8888; // The port your proxy server listens on
+const HOST = 'localhost';
+server.listen(PORT, HOST, () => {
+  console.log(`Proxy server listening on port ${HOST}:${PORT}`);
 });

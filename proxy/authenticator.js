@@ -1,32 +1,35 @@
 const { authenticate } = require('../auth/authService');
 
 function handleAuthentication(socket, data) {
-  // This function should parse the client's authentication data
-  // For now, let's assume data contains a username and password in plain text for simplicity
   const { username, password } = parseAuthenticationData(data);
 
-  // Use the authService to check credentials
+  // Sử dụng hàm authenticate đồng bộ để kiểm tra thông tin đăng nhập
   const isAuthenticated = authenticate(username, password);
 
-  // Respond to the client based on the authentication result
+  // Phản hồi lại client dựa trên kết quả xác thực
   if (isAuthenticated) {
+    // Nếu xác thực thành công
     socket.write('Authentication successful');
-    // Proceed to the next step in the SOCKS protocol or pass control to the main handler
+    // Tiếp tục với các bước tiếp theo...
   } else {
+    // Nếu xác thực thất bại
     socket.write('Authentication failed');
-    socket.end(); // Close the connection if authentication fails
+    socket.end(); // Kết thúc kết nối sau khi xác thực thất bại
   }
 }
 
 function parseAuthenticationData(data) {
-  // Placeholder for your data parsing logic
-  // In a real-world scenario, you would have to extract the username and password from the data buffer
-  // The following is a fictitious example and does not correspond to any real protocol
-  const usernameLength = data[0];
-  const username = data.slice(1, 1 + usernameLength).toString();
-  const password = data.slice(1 + usernameLength).toString();
-
-  return { username, password };
+  // Giả sử dữ liệu được gửi dưới dạng chuỗi JSON
+  try {
+    const credentials = JSON.parse(data.toString());
+    return {
+      username: credentials.username,
+      password: credentials.password,
+    };
+  } catch (error) {
+    // Xử lý lỗi khi không phân tích được dữ liệu và trả về giá trị mặc định
+    return { username: null, password: null };
+  }
 }
 
 module.exports = { handleAuthentication };

@@ -1,35 +1,83 @@
-// src/core/proxyCore.js
+const net = require('net');
+const { handleAuthentication } = require('../auth/authenticator');
+
 class ProxyCore {
-    handleConnection(info, destination) {
-      console.log(`Connection request to ${info.dstAddr}:${info.dstPort}`);
-  
-      // Your logic for handling different protocols here
-      // Example: You can check the protocol and call specific handler
-      if (info.dstPort === 80) {
-        // HTTP protocol
-        // Implement your HTTP handler logic
-      } else if (info.dstPort === 443) {
-        // HTTPS protocol
-        // Implement your HTTPS handler logic
-      } else {
-        // Default handler
-        // Implement default protocol handler logic
+  constructor() {
+    // Initialization if needed
+  }
+
+  handleConnection(clientSocket) {
+    clientSocket.once('data', (data) => {
+      // Perform authentication on the initial data received
+      if (handleAuthentication(clientSocket, data)) {
+        // If authenticated, proceed with connection
+        this.setUpProxy(clientSocket, data);
       }
-  
-      destination.on('data', (data) => {
-        console.log('Data from client:', data.toString());
-      });
-  
-      destination.on('data', (data) => {
-        console.log('Data from destination:', data.toString());
-        info.socket.write(data);
-      });
-  
-      destination.on('end', () => {
-        console.log('Connection closed');
-      });
+      // If not authenticated, the handleAuthentication function will close the socket
+    });
+  }
+
+  setUpProxy(clientSocket, data) {
+    // Here you would parse the data to determine the destination address and port
+    const { dstAddr, dstPort } = this.parseConnectionData(data);
+
+    if (dstPort === 80) {
+      this.handleHttp(clientSocket, dstAddr, dstPort);
+    } else if (dstPort === 443) {
+      this.handleHttps(clientSocket, dstAddr, dstPort);
+    } else {
+      this.handleDefault(clientSocket, dstAddr, dstPort);
     }
   }
-  
-  module.exports = ProxyCore;
-  
+
+  parseConnectionData(data) {
+    // Placeholder for actual connection data parsing logic
+    // This should return the destination address and port
+    // For the example, we assume the data is a string like "address:port"
+    const [address, port] = data.toString().split(':');
+    return { dstAddr: address, dstPort: parseInt(port, 10) };
+  }
+
+  handleHttp(clientSocket, dstAddr, dstPort) {
+    // Implement HTTP handling logic here
+    console.log('HTTP connection handling not implemented.');
+  }
+
+  handleHttps(clientSocket, dstAddr, dstPort) {
+    // Implement HTTPS handling logic here
+    console.log('HTTPS connection handling not implemented.');
+  }
+
+  handleDefault(clientSocket, dstAddr, dstPort) {
+    const destinationSocket = net.createConnection({
+      host: dstAddr,
+      port: dstPort
+    }, () => {
+      console.log(`Connected to ${dstAddr}:${dstPort}`);
+      clientSocket.pipe(destinationSocket);
+      destinationSocket.pipe(clientSocket);
+    });
+
+    destinationSocket.on('error', (err) => {
+      console.log('Destination socket error:', err.message);
+      clientSocket.end();
+    });
+
+    clientSocket.on('error', (err) => {
+      console.log('Client socket error:', err.message);
+      destinationSocket.end();
+    });
+
+    destinationSocket.on('end', () => {
+      console.log('Destination socket ended');
+      clientSocket.end();
+    });
+
+    clientSocket.on('end', () => {
+      console.log('Client socket ended');
+      destinationSocket.end();
+    });
+  }
+}
+
+module.exports = ProxyCore;

@@ -7,12 +7,14 @@
     "start": "node src/index.js"
   },
   "dependencies": {
+    "dns": "^0.2.2",
     "ftp": "^0.3.10",
     "http": "^0.0.1-security",
     "https": "^1.0.0",
-    "socks5": "^1.0.1"
+    "net": "^1.0.2",
+    "socks5": "^1.0.1",
+    "util": "^0.12.5"
   },
-  "devDependencies": {},
   "keywords": [
     "socks",
     "proxy",
