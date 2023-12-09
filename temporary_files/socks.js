@@ -25,18 +25,61 @@ var net = require('net'),
     AUTHENTICATION = {
         NOAUTH: 0x00,
         GSSAPI: 0x01,
-                }
+        USERPASS: 0x02,
+        NONE: 0xFF
+    },
+/*
+ * o  CMD
+ *    o  CONNECT X'01'
+ *    o  BIND X'02'
+ *    o  UDP ASSOCIATE X'03'
+ */
+    REQUEST_CMD = {
+        CONNECT: 0x01,
+        BIND: 0x02,
+        UDP_ASSOCIATE: 0x03
+    },
+/*
+ * o  ATYP   address type of following address
+ *    o  IP V4 address: X'01'
+ *    o  DOMAINNAME: X'03'
+ *    o  IP V6 address: X'04'
+ */
+    ATYP = {
+        IP_V4: 0x01,
+        DNS: 0x03,
+        IP_V6: 0x04
+    },
+    Address = {
+        read: function (buffer, offset) {
+            if (buffer[offset] == ATYP.IP_V4) {
+                return util.format('%s.%s.%s.%s', buffer[offset + 1], buffer[offset + 2], buffer[offset + 3], buffer[offset + 4]);
+            } else if (buffer[offset] == ATYP.DNS) {
+                return buffer.toString('utf8', offset + 2, offset + 2 + buffer[offset + 1]);
+            } else if (buffer[offset] == ATYP.IP_V6) {
+                return buffer.slice(buffer[offset + 1], buffer[offset + 1 + 16]);
+            }
+        },
+        sizeOf: function(buffer, offset) {
+            if (buffer[offset] == ATYP.IP_V4) {
+                return 4;
+            } else if (buffer[offset] == ATYP.DNS) {
+                return buffer[offset+1];
+            } else if (buffer[offset] == ATYP.IP_V6) {
+                return 16;
+            }
+        }
     },
     Port = {
         read: function (buffer, offset) {
-                  if (buffer[offset] == ATYP.IP_V4) {
-                      return buffer.readUInt16BE(8);
-                  } else if (buffer[offset] == ATYP.DNS) {
-                      return buffer.readUInt16BE(5+buffer[offset+1]);
-                  } else if (buffer[offset] == ATYP.IP_V6) {
-                      return buffer.readUInt16BE(20);
-                  }
-              },
+            if (buffer[offset] == ATYP.IP_V4) {
+                return buffer.readUInt16BE(8);
+            } else if (buffer[offset] == ATYP.DNS) {
+                return buffer.readUInt16BE(5+buffer[offset+1]);
+            } else if (buffer[offset] == ATYP.IP_V6) {
+                return buffer.readUInt16BE(20);
+            }
+        },
     };
 
 function createSocksServer(cb, userpass) {
