@@ -26,7 +26,6 @@ function handleHttpRequest(clientSocket, endpoint, requestData) {
     clientSocket.end();
   });
 
-  // Write the request body if present
   if (requestData.body) {
     req.write(requestData.body);
   }

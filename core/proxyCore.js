@@ -21,13 +21,33 @@ class ProxyCore {
     // Here you would parse the data to determine the destination address and port
     const { dstAddr, dstPort } = this.parseConnectionData(data);
 
+    // Parse the initial data to extract endpoint and requestData
+    const { endpoint, requestData } = this.parseHttpRequest(data);
+
     if (dstPort === 80) {
-      this.handleHttp(clientSocket, dstAddr, dstPort);
+      this.handleHttp(clientSocket, endpoint, requestData);
     } else if (dstPort === 443) {
-      this.handleHttps(clientSocket, dstAddr, dstPort);
+      this.handleHttps(clientSocket, dstAddr, dstPort); // Keep this as is for HTTPS
     } else {
       this.handleDefault(clientSocket, dstAddr, dstPort);
     }
+  }
+
+  handleHttp(clientSocket, endpoint, requestData) {
+    handleHttpRequest(clientSocket, endpoint, requestData);
+  }
+
+  parseHttpRequest(data) {
+    // Placeholder for actual HTTP request data parsing logic
+    // This should return the endpoint and requestData
+    // For the example, let's assume the data is a string in the format "GET /endpoint HTTP/1.1\r\nHost: dstAddr\r\n..."
+    const requestLines = data.toString().split('\r\n');
+    const requestLine = requestLines[0].split(' '); // "GET /endpoint HTTP/1.1"
+    const endpoint = requestLine[1]; // "/endpoint"
+    // requestData could be headers + body, here we just pass the entire data
+    const requestData = data;
+
+    return { endpoint, requestData };
   }
 
   parseConnectionData(data) {
@@ -38,14 +58,8 @@ class ProxyCore {
     return { dstAddr: address, dstPort: parseInt(port, 10) };
   }
 
-  handleHttp(clientSocket, dstAddr, dstPort) {
-    // Implement HTTP handling logic here
-    console.log('HTTP connection handling not implemented.');
-  }
-
   handleHttps(clientSocket, dstAddr, dstPort) {
-    // Implement HTTPS handling logic here
-    console.log('HTTPS connection handling not implemented.');
+    handleHttpsRequest(clientSocket, endpoint, requestData);
   }
 
   handleDefault(clientSocket, dstAddr, dstPort) {
