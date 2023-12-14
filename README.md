@@ -8,6 +8,6 @@ This project is a SOCKS5 proxy server implemented in Node.js.
 
 ## Author
 
-- **Name:** nerkar
+- **Name:** nerkar - Nhat Khanh Tran
 - **Contact:** nerkar.tran@gmail.com
 
